@@ -33,7 +33,7 @@ if (Test-Path -Path $TempFolder) {
 
 # Tests if config folder has been downloaded locally and if not it downloads the files to the temp directory
 if (Test-Path -Path .\Config) {
-    $configdir = .\Config
+    $configdir = '.\Config'
 } else { 
     $configdir = $TempFolder
     Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/EndCod3r/pc-optimizer/main/Config/services.json" -OutFile $TempFolder\services.json
