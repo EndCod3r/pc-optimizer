@@ -8,8 +8,10 @@
 .NOTES
     Author         : EndLordHD @EndCod3r
     GitHub         : https://github.com/EndCod3r
-    Version        : Pre-release v0.2
+    Version        : Pre-release v0.1.2
 #>
+
+param($AcceptAllTweaks)
 
 # Checking for admin privileges
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -27,7 +29,10 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Checks if Ultimate Performance plan exists and if it doesn't it adds it
-$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'
+if ($AcceptAllTweaks -eq $true) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'}
+
 if ( $userinput -eq 'y' -or !$userinput ) {
     # From ChrisTitusTech/winutil
     $powerSchemeName = "Ultimate Performance"
@@ -62,7 +67,9 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Set some services to manual
-$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'
+if ($AcceptAllTweaks -eq $true) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
 
     $Services = Get-Content .\Config\services.json | ConvertFrom-Json
@@ -77,7 +84,9 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Delete C:\Windows\Temp and user's temporary files
-$userinput = Read-Host -Prompt 'Do you want to delete temporary files (Recommended) (Y/n)'
+if ($AcceptAllTweaks -eq $true) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to delete temporary files (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
     Write-Output "Removing Windows Temporary Files (C:\Windows\Temp)"
     Start-Sleep 1
