@@ -44,7 +44,18 @@ if ( $userinput -eq 'y' -or !$userinput ) {
         powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
         powercfg -setactive $powerSchemeGuid
         powercfg -change -monitor-timeout-ac 0
-
+        
+        Write-Output "Make sure that the Ultimate Performance power plan is active."
+        
+        $i = 3
+        do {
+            Write-Host "Opeing Power Options in $i seconds."
+            Start-Sleep 1
+            $i--
+        } while ($i -gt 0)
+        
+        control.exe /name Microsoft.PowerOptions
+        
     } else {
         Write-Host "Power scheme '$powerSchemeName' already exists."
     }
@@ -60,5 +71,7 @@ if ( $userinput -eq 'y' -or !$userinput ) {
         $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] | Out-Null
     }
 
-    Write-Output "If you see any errors stating that the service doesn't exist don't worry nothing is wrong."
+    Write-Output "
+
+    If you see any errors stating Service wasn't found or Access is denied, don't worry, nothing is wrong."
 }
