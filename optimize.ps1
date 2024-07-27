@@ -68,10 +68,26 @@ if ( $userinput -eq 'y' -or !$userinput ) {
     $Services = Get-Content .\Config\services.json | ConvertFrom-Json
 
     for ($i = 0; $i -lt $Services.service.name.Count; $i++) {
-        $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] | Out-Null
+        $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] -ErrorAction SilentlyContinue
     }
 
     Write-Output "
+    If you see any errors stating ""Service wasn't found"" or ""Access is denied,"" don't worry, nothing is wrong.
+    "
+}
 
-    If you see any errors stating Service wasn't found or Access is denied, don't worry, nothing is wrong."
+# Delete C:\Windows\Temp and user's temporary files
+$userinput = Read-Host -Prompt 'Do you want to delete temporary files (Recommended) (Y/n)'
+if ( $userinput -eq 'y' -or !$userinput ) {
+    Write-Output "Removing Windows Temporary Files (C:\Windows\Temp)"
+    Start-Sleep 1
+    Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+
+    Write-Output "Removing User Temporary Files ($env:TEMP)"
+    Start-Sleep 1
+    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    
+    Write-Output "
+    If you see any errors stating ""Access is denied,"" don't worry, nothing is wrong.
+    "
 }
