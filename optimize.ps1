@@ -8,4 +8,57 @@
 .NOTES
     Author         : EndLordHD @EndCod3r
     GitHub         : https://github.com/EndCod3r
+    Version        : Pre-release v0.1
 #>
+
+# Checking for admin privileges
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-Not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) ) {
+    Write-Output "Please run this script as administrator."
+    exit
+}
+
+# Create restore point
+$userinput = Read-Host -Prompt 'Do you want to have a restore point created? (Y/n)'
+$userinput = $userinput.ToLower()
+if ( $userinput -eq 'y' -or !$userinput ) {
+    Checkpoint-Computer -Description "Pre-Optimizations" -RestorePointType "MODIFY_SETTINGS"
+    Write-Output "If anything happens that you don't want then you can go back to this restore point." 
+}
+
+# Checks if Ultimate Performance plan exists and if it doesn't it adds it
+$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Y/n)'
+if ( $userinput -eq 'y' -or !$userinput ) {
+    # From ChrisTitusTech/winutil
+    $powerSchemeName = "Ultimate Performance"
+    $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
+
+    $schemes = powercfg /list | Out-String -Stream
+
+    $ultimateScheme = $schemes | Where-Object { $_ -match $powerSchemeName }
+    if ($null -eq $ultimateScheme) {
+        Write-Host "Power scheme '$powerSchemeName' not found. Adding..."
+
+        # Adds the power plan
+        powercfg /duplicatescheme $powerSchemeGuid
+        powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
+        powercfg -setactive $powerSchemeGuid
+        powercfg -change -monitor-timeout-ac 0
+
+    } else {
+        Write-Host "Power scheme '$powerSchemeName' already exists."
+    }
+}
+
+# Set some services to manual
+$userinput = Read-Host -Prompt 'Do you want to optimize services? (Y/n)'
+if ( $userinput -eq 'y' -or !$userinput ) {
+
+    $Services = Get-Content .\Config\services.json | ConvertFrom-Json
+
+    for ($i = 0; $i -lt $Services.service.name.Count; $i++) {
+        $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] | Out-Null
+    }
+
+    Write-Output "If you see any errors stating that the service doesn't exist don't worry nothing is wrong."
+}
