@@ -8,7 +8,7 @@
 .NOTES
     Author         : EndLordHD @EndCod3r
     GitHub         : https://github.com/EndCod3r
-    Version        : Pre-release v0.1
+    Version        : Pre-release v0.2
 #>
 
 # Checking for admin privileges
