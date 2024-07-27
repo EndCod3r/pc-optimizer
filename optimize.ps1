@@ -106,3 +106,12 @@ if ( $userinput -eq 'y' -or !$userinput ) {
     If you see any errors stating ""Access is denied,"" don't worry, nothing is wrong.
     "
 }
+
+if ($AcceptRecommendedTweaks) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to run Disk Cleanup? (Recommended) (Y/n)'}
+if ( $userinput -eq 'y' -or !$userinput ) {
+    cleanmgr.exe /d C: /VERYLOWDISK
+    Write-Output "Running DISM Image Cleanup"
+    Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
+}
