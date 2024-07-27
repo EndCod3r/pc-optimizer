@@ -72,10 +72,10 @@ if ($AcceptAllTweaks -eq $true) {
     $userinput = 'y'
 } else {$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
-
     $Services = Get-Content .\Config\services.json | ConvertFrom-Json
 
     for ($i = 0; $i -lt $Services.service.name.Count; $i++) {
+        Write-Progress -Activity "Optimizing services" -Status $Services.service.name[$i] 
         $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] -ErrorAction SilentlyContinue
     }
 
