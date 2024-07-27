@@ -19,6 +19,22 @@ if ($AcceptAllTweaks) {
     $AcceptRecommendedTweaks = $true
 }
 
+# Sets variable for temporary files directory
+$TempFolder = $env:TEMP + "\ec-pc-optimizer"
+
+# Tests if the temp directory (script has been ran before) and removes it and if it doesn't exist it creates it
+if (Test-Path -Path $TempFolder) {
+    Remove-Item -Recurse -Force $TempFolder
+} else { mkdir $TempFolder | Out-Null }
+
+# Tests if config folder has been downloaded locally and if not it downloads the files to the temp directory
+if (Test-Path -Path .\Config) {
+    $configdir = .\Config
+} else { 
+    $configdir = $TempFolder
+    Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/EndCod3r/pc-optimizer/main/Config/services.json" -OutFile $TempFolder\services.json
+    Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/EndCod3r/pc-optimizer/main/Config/tele.json" -OutFile $TempFolder\tele.json
+}
 
 # Checking for admin privileges
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -78,7 +94,7 @@ if ($AcceptRecommendedTweaks) {
 } else {$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
 
-    $Services = Get-Content .\Config\services.json | ConvertFrom-Json
+    $Services = Get-Content $configdir\services.json | ConvertFrom-Json
 
     for ($i = 0; $i -lt $Services.service.name.Count; $i++) {
         $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] -ErrorAction SilentlyContinue
@@ -155,7 +171,7 @@ if ($userinput -eq 'y' -or !$userinput) {
       Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
 
       # Disables Scheduled Tasks
-      $tele = Get-Content .\Config\tele.json | ConvertFrom-Json
+      $tele = Get-Content $configdir\tele.json | ConvertFrom-Json
 
       for ($i = 0; $i -lt $tele.ScheduledTask.name.Count; $i++) {
         Disable-ScheduledTask -TaskName $tele.ScheduledTask.name[$i] -ErrorAction SilentlyContinue
