@@ -19,7 +19,7 @@ if (-Not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Adm
 }
 
 # Create restore point
-$userinput = Read-Host -Prompt 'Do you want to have a restore point created? (Y/n)'
+$userinput = Read-Host -Prompt 'Do you want to have a restore point created? (Recommended) (Y/n)'
 $userinput = $userinput.ToLower()
 if ( $userinput -eq 'y' -or !$userinput ) {
     Checkpoint-Computer -Description "Pre-Optimizations" -RestorePointType "MODIFY_SETTINGS"
@@ -27,7 +27,7 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Checks if Ultimate Performance plan exists and if it doesn't it adds it
-$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Y/n)'
+$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'
 if ( $userinput -eq 'y' -or !$userinput ) {
     # From ChrisTitusTech/winutil
     $powerSchemeName = "Ultimate Performance"
@@ -62,7 +62,7 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Set some services to manual
-$userinput = Read-Host -Prompt 'Do you want to optimize services? (Y/n)'
+$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'
 if ( $userinput -eq 'y' -or !$userinput ) {
 
     $Services = Get-Content .\Config\services.json | ConvertFrom-Json
