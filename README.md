@@ -9,6 +9,12 @@ EndCod3r's PC Optimizer! - Simple and easy way to speed up your PC!
 
 This script must be run in an admin PowerShell because it alters parts of the system that normal users can't.
 
+### One-liner
+
+```ps1
+irm https://endcod3r.github.io/pc-optimizer/optimize.ps1 | iex
+```
+
 ### Git Clone
 
 ```ps1
