@@ -8,7 +8,7 @@
 .NOTES
     Author         : EndLordHD @EndCod3r
     GitHub         : https://github.com/EndCod3r
-    Version        : Pre-release v0.1
+    Version        : Pre-release v0.2
 #>
 
 # Checking for admin privileges
@@ -19,7 +19,7 @@ if (-Not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Adm
 }
 
 # Create restore point
-$userinput = Read-Host -Prompt 'Do you want to have a restore point created? (Y/n)'
+$userinput = Read-Host -Prompt 'Do you want to have a restore point created? (Recommended) (Y/n)'
 $userinput = $userinput.ToLower()
 if ( $userinput -eq 'y' -or !$userinput ) {
     Checkpoint-Computer -Description "Pre-Optimizations" -RestorePointType "MODIFY_SETTINGS"
@@ -27,7 +27,7 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Checks if Ultimate Performance plan exists and if it doesn't it adds it
-$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Y/n)'
+$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'
 if ( $userinput -eq 'y' -or !$userinput ) {
     # From ChrisTitusTech/winutil
     $powerSchemeName = "Ultimate Performance"
@@ -44,21 +44,50 @@ if ( $userinput -eq 'y' -or !$userinput ) {
         powercfg -attributes SUB_SLEEP 7bc4a2f9-d8fc-4469-b07b-33eb785aaca0 -ATTRIB_HIDE
         powercfg -setactive $powerSchemeGuid
         powercfg -change -monitor-timeout-ac 0
-
+        
+        Write-Output "Make sure that the Ultimate Performance power plan is active."
+        
+        $i = 3
+        do {
+            Write-Host "Opeing Power Options in $i seconds."
+            Start-Sleep 1
+            $i--
+        } while ($i -gt 0)
+        
+        control.exe /name Microsoft.PowerOptions
+        
     } else {
         Write-Host "Power scheme '$powerSchemeName' already exists."
     }
 }
 
 # Set some services to manual
-$userinput = Read-Host -Prompt 'Do you want to optimize services? (Y/n)'
+$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'
 if ( $userinput -eq 'y' -or !$userinput ) {
 
     $Services = Get-Content .\Config\services.json | ConvertFrom-Json
 
     for ($i = 0; $i -lt $Services.service.name.Count; $i++) {
-        $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] | Out-Null
+        $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] -ErrorAction SilentlyContinue
     }
 
-    Write-Output "If you see any errors stating that the service doesn't exist don't worry nothing is wrong."
+    Write-Output "
+    If you see any errors stating ""Service wasn't found"" or ""Access is denied,"" don't worry, nothing is wrong.
+    "
+}
+
+# Delete C:\Windows\Temp and user's temporary files
+$userinput = Read-Host -Prompt 'Do you want to delete temporary files (Recommended) (Y/n)'
+if ( $userinput -eq 'y' -or !$userinput ) {
+    Write-Output "Removing Windows Temporary Files (C:\Windows\Temp)"
+    Start-Sleep 1
+    Get-ChildItem -Path "C:\Windows\Temp" *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+
+    Write-Output "Removing User Temporary Files ($env:TEMP)"
+    Start-Sleep 1
+    Get-ChildItem -Path $env:TEMP *.* -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+    
+    Write-Output "
+    If you see any errors stating ""Access is denied,"" don't worry, nothing is wrong.
+    "
 }
