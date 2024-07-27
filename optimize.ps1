@@ -11,6 +11,8 @@
     Version        : Pre-release v0.1.2
 #>
 
+# Many of these tweaks are from ChrisTitusTech/winutil go check out his repo
+
 param($AcceptAllTweaks)
 
 # Checking for admin privileges
@@ -34,7 +36,6 @@ if ($AcceptAllTweaks -eq $true) {
 } else {$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'}
 
 if ( $userinput -eq 'y' -or !$userinput ) {
-    # From ChrisTitusTech/winutil
     $powerSchemeName = "Ultimate Performance"
     $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
 
