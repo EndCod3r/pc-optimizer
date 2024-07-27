@@ -15,6 +15,11 @@
 
 param($AcceptAllTweaks, $AcceptRecommendedTweaks)
 
+if ($AcceptAllTweaks) {
+    $AcceptRecommendedTweaks = $true
+}
+
+
 # Checking for admin privileges
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
 if (-Not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) ) {
@@ -31,7 +36,7 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Checks if Ultimate Performance plan exists and if it doesn't it adds it
-if ($AcceptAllTweaks -eq $true -or $AcceptRecommendedTweaks -eq $true) {
+if ($AcceptRecommendedTweaks) {
     $userinput = 'y'
 } else {$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'}
 
@@ -68,7 +73,7 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Set some services to manual
-if ($AcceptAllTweaks -eq $true -or $AcceptRecommendedTweaks -eq $true) {
+if ($AcceptRecommendedTweaks) {
     $userinput = 'y'
 } else {$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
@@ -85,7 +90,7 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Delete C:\Windows\Temp and user's temporary files
-if ($AcceptAllTweaks -eq $true -or $AcceptRecommendedTweaks -eq $true) {
+if ($AcceptRecommendedTweaks) {
     $userinput = 'y'
 } else {$userinput = Read-Host -Prompt 'Do you want to delete temporary files (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
