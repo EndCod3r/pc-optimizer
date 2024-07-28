@@ -1,7 +1,7 @@
 # EndCoder's PC Tweaker
 
 > [!WARNING]
-> This script is not ready for use yet! Use at your own risk.
+> This script makes changes to the registry that may create issues. 
 
 This is an quick and easy way to debloat and speed up your PC.
 
