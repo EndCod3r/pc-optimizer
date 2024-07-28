@@ -1,4 +1,4 @@
-# EndCoder's PC Tweaker.
+# EndCoder's PC Tweaker
 
 > [!WARNING]
 > This script is not ready for use yet! Use at your own risk.
