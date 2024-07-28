@@ -13,7 +13,10 @@
 
 # Many of these tweaks are from ChrisTitusTech/winutil go check out his repo
 
-param($AcceptAllTweaks, $AcceptRecommendedTweaks)
+param(
+    [switch]$AcceptAllTweaks,
+    [switch]$AcceptRecommendedTweaks
+)
 
 if ($AcceptAllTweaks) {
     $AcceptRecommendedTweaks = $true
