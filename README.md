@@ -38,7 +38,7 @@ Unzip the archive, and open a PowerShell as administrator, then navigate to the 
 If you get an error stating running scripts are disabled on this system then run this command
 
 ```ps1
-Set-ExecutionPolicy Unrestricted -Scope Process
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
 ```
 
 This makes it so you can run any PowerShell script in the current process. Once you close PowerShell it will revert back.
