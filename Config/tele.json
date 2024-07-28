@@ -326,6 +326,20 @@
       "Name": "ScoobeSystemSettingEnabled",
       "Value": "0",
       "Type": "DWord"
+    },
+    {
+      "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowWiFiHotSpotReporting",
+      "Name": "Value",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
+    },
+    {
+      "Path": "HKLM:\\Software\\Microsoft\\PolicyManager\\default\\WiFi\\AllowAutoConnectToWiFiSenseHotspots",
+      "Name": "Value",
+      "Type": "DWord",
+      "Value": "0",
+      "OriginalValue": "1"
     }
   ]
 }
