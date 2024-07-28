@@ -8,8 +8,40 @@
 .NOTES
     Author         : EndLordHD @EndCod3r
     GitHub         : https://github.com/EndCod3r
-    Version        : Pre-release v0.1.1
+    Version        : Pre-release v0.2.0
 #>
+
+# Many of these tweaks are from ChrisTitusTech/winutil go check out his repo
+
+param(
+    [switch]$AcceptAllTweaks,
+    [switch]$AcceptRecommendedTweaks
+)
+
+if ($AcceptAllTweaks) {
+    $AcceptRecommendedTweaks = $true
+    Read-Host -Prompt "
+    You gave the parameter to accept all tweaks.
+    This is HIGHLY unrecommended if you don't know what all of the tweaks do.
+    Press enter to continue or CTRL+C to exit."
+}
+
+# Sets variable for temporary files directory
+$TempFolder = $env:TEMP + "\ec-pc-optimizer"
+
+# Tests if the temp directory (script has been ran before) and removes it and if it doesn't exist it creates it
+if (Test-Path -Path $TempFolder) {
+    Remove-Item -Recurse -Force $TempFolder
+} else { mkdir $TempFolder | Out-Null }
+
+# Tests if config folder has been downloaded locally and if not it downloads the files to the temp directory
+if (Test-Path -Path .\Config) {
+    $configdir = '.\Config'
+} else { 
+    $configdir = $TempFolder
+    Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/EndCod3r/pc-optimizer/main/Config/services.json" -OutFile $TempFolder\services.json
+    Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/EndCod3r/pc-optimizer/main/Config/tele.json" -OutFile $TempFolder\tele.json
+}
 
 # Checking for admin privileges
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -27,9 +59,11 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Checks if Ultimate Performance plan exists and if it doesn't it adds it
-$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'
+if ($AcceptRecommendedTweaks) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to add Ultimate Performance power plan? (Recommended) (Y/n)'}
+
 if ( $userinput -eq 'y' -or !$userinput ) {
-    # From ChrisTitusTech/winutil
     $powerSchemeName = "Ultimate Performance"
     $powerSchemeGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61"
 
@@ -62,10 +96,12 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Set some services to manual
-$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'
+if ($AcceptRecommendedTweaks) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to optimize services? (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
 
-    $Services = Get-Content .\Config\services.json | ConvertFrom-Json
+    $Services = Get-Content $configdir\services.json | ConvertFrom-Json
 
     for ($i = 0; $i -lt $Services.service.name.Count; $i++) {
         $Services.service.name[$i] | Set-Service -StartupType $Services.service.StartupType[$i] -ErrorAction SilentlyContinue
@@ -77,7 +113,9 @@ if ( $userinput -eq 'y' -or !$userinput ) {
 }
 
 # Delete C:\Windows\Temp and user's temporary files
-$userinput = Read-Host -Prompt 'Do you want to delete temporary files (Recommended) (Y/n)'
+if ($AcceptRecommendedTweaks) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to delete temporary files (Recommended) (Y/n)'}
 if ( $userinput -eq 'y' -or !$userinput ) {
     Write-Output "Removing Windows Temporary Files (C:\Windows\Temp)"
     Start-Sleep 1
@@ -90,4 +128,63 @@ if ( $userinput -eq 'y' -or !$userinput ) {
     Write-Output "
     If you see any errors stating ""Access is denied,"" don't worry, nothing is wrong.
     "
+}
+
+if ($AcceptRecommendedTweaks) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt 'Do you want to run Disk Cleanup? (Recommended) (Y/n)'}
+if ( $userinput -eq 'y' -or !$userinput ) {
+    cleanmgr.exe /d C: /VERYLOWDISK
+    Write-Output "Running DISM Image Cleanup"
+    Dism.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
+}
+
+if ($AcceptRecommendedTweaks) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt "Do you want to disable Microsoft's telemetry? (Recommnded) (Y/n)"}
+if ($userinput -eq 'y' -or !$userinput) {
+    # this is just taken from ChrisTitusTech's winutil because I don't understand any of this
+
+    bcdedit /set {current} bootmenupolicy Legacy | Out-Null
+      If ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild -lt 22557) {
+          $taskmgr = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
+          Do {
+              Start-Sleep -Milliseconds 100
+              $preferences = Get-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -ErrorAction SilentlyContinue
+          } Until ($preferences)
+          Stop-Process $taskmgr
+          $preferences.Preferences[28] = 0
+          Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager" -Name "Preferences" -Type Binary -Value $preferences.Preferences
+      }
+      Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}" -Recurse -ErrorAction SilentlyContinue
+
+      # Fix Managed by your organization in Edge if regustry path exists then remove it
+
+      If (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge") {
+          Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Recurse -ErrorAction SilentlyContinue
+      }
+
+      # Group svchost.exe processes
+      $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
+      Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $ram -Force
+
+      $autoLoggerDir = "$env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
+      If (Test-Path "$autoLoggerDir\AutoLogger-Diagtrack-Listener.etl") {
+          Remove-Item "$autoLoggerDir\AutoLogger-Diagtrack-Listener.etl"
+      }
+      icacls $autoLoggerDir /deny SYSTEM:`(OI`)`(CI`)F | Out-Null
+
+      # Disable Defender Auto Sample Submission
+      Set-MpPreference -SubmitSamplesConsent 2 -ErrorAction SilentlyContinue | Out-Null
+
+      # Disables Scheduled Tasks
+      $tele = Get-Content $configdir\tele.json | ConvertFrom-Json
+
+      for ($i = 0; $i -lt $tele.ScheduledTask.name.Count; $i++) {
+        Disable-ScheduledTask -TaskName $tele.ScheduledTask.name[$i] -ErrorAction SilentlyContinue
+
+    }
+    for ($i = 0; $i -lt $tele.registry.name.Count; $i++) {
+        Set-ItemProperty -Path $tele.registry.Path[$i] -Name $tele.registry.Name[$i] -Value $tele.registry.Value[$i] -Type $tele.registry.Type[$i] 
+    }
 }
