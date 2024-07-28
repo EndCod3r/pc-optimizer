@@ -31,4 +31,16 @@ Look for and click the green `<> Code` button near the top of this repo's page a
 
 Unzip the archive, and open a PowerShell as administrator, then navigate to the pc-optimizer directory and run `.\optimize.ps1`
 
+## Troubleshooting
+
+### Scripts disabled on system
+
+If you get an error stating running scripts are disabled on this system then run this command
+
+```ps1
+Set-ExecutionPolicy Unrestricted -Scope Process
+```
+
+This makes it so you can run any PowerShell script in the current process. Once you close PowerShell it will revert back.
+
 If you have any problems, create an [Issue](https://github.com/EndCod3r/pc-optimizer/issues/new)
