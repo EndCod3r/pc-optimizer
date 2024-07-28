@@ -19,7 +19,7 @@ if ($AcceptAllTweaks) {
     $AcceptRecommendedTweaks = $true
     Read-Host -Prompt "
     You gave the parameter to accept all tweaks.
-    This is HIGHLY unrecommended if you don't know what all of the tweaks.
+    This is HIGHLY unrecommended if you don't know what all of the tweaks do.
     Press enter to continue or CTRL+C to exit."
 }
 
