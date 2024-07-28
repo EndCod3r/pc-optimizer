@@ -1,9 +1,9 @@
-# EndCoder's PC Optimizer.
+# EndCoder's PC Optimizer/Debloater.
 
 > [!WARNING]
 > This script is not ready for use yet! Use at your own risk.
 
-EndCod3r's PC Optimizer! - Simple and easy way to speed up your PC!
+This is an quick and easy way to debloat and speed up your PC.
 
 ## Usage
 
