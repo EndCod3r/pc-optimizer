@@ -188,3 +188,16 @@ if ($userinput -eq 'y' -or !$userinput) {
         Set-ItemProperty -Path $tele.registry.Path[$i] -Name $tele.registry.Name[$i] -Value $tele.registry.Value[$i] -Type $tele.registry.Type[$i] 
     }
 }
+
+
+if ($AcceptAllTweaks) {
+    $userinput = 'y'
+} else {$userinput = Read-Host -Prompt "Do you want to disable IPv6? (Not Recommended Unless It's Causing Problems) (y/N)"}
+if ($userinput -eq 'y' -or !$userinput) {
+    $IPv6 = Get-Content $configdir\disable_ipv6.json | ConvertFrom-Json
+
+    for ($i = 0; $i -lt $Registry.Count; $i++) {
+        Set-ItemProperty -Path $IPv6.registry.Path[$i] -Name $IPv6.registry.Name[$i] -Value $IPv6.registry.Value[$i] -Type $IPv6.registry.Type[$i] 
+    }
+    Disable-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6
+}
