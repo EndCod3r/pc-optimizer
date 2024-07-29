@@ -193,7 +193,7 @@ if ($userinput -eq 'y' -or !$userinput) {
 if ($AcceptAllTweaks) {
     $userinput = 'y'
 } else {$userinput = Read-Host -Prompt "Do you want to disable IPv6? (Not Recommended Unless It's Causing Problems) (y/N)"}
-if ($userinput -eq 'y' -or !$userinput) {
+if ($userinput -eq 'y') {
     $IPv6 = Get-Content $configdir\disable_ipv6.json | ConvertFrom-Json
 
     for ($i = 0; $i -lt $Registry.Count; $i++) {
