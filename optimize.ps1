@@ -201,3 +201,8 @@ if ($userinput -eq 'y') {
     }
     Disable-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6
 }
+
+if ((Test-Path -Path $TempFolder) -and ($configdir -eq $TempFolder)) {
+    Write-Output "Cleaning up..."
+    Remove-Item -Recurse -Force $TempFolder
+}
